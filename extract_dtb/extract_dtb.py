@@ -47,11 +47,24 @@ def safe_output_path(output_dir, dtb_filename_new):
     os.makedirs(os.path.dirname(ret), exist_ok=True)
     return ret
 
+
 def get_header(content, offset=0):
-    header_keys = ["magic", "total_size", "off_dt_struct", "off_dt_strings", "off_mem_rsvmap", "version", "last_compatible_version", "boot_cpuid_phys", "size_dt_strings", "size_dt_struct"]
-    header = struct.unpack_from(">IIIIIIIIII", content, offset = offset)
+    header_keys = [
+        "magic",
+        "total_size",
+        "off_dt_struct",
+        "off_dt_strings",
+        "off_mem_rsvmap",
+        "version",
+        "last_compatible_version",
+        "boot_cpuid_phys",
+        "size_dt_strings",
+        "size_dt_struct",
+    ]
+    header = struct.unpack_from(">IIIIIIIIII", content, offset=offset)
     h = dict(zip(header_keys, header))
     return h
+
 
 def split(args):
     """Reads a file and looks for DTB_HEADER occurrences (beginning of each DTB)
