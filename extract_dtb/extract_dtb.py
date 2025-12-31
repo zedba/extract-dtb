@@ -39,7 +39,7 @@ def safe_output_path(output_dir, dtb_filename_new):
     :returns: the resulting file name
     """
     if "../" in dtb_filename_new + "/":
-        raise RuntimeException(
+        raise RuntimeError(
             "DTB file path points outside of extraction"
             " directory: " + dtb_filename_new
         )
