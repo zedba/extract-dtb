@@ -19,6 +19,7 @@ along with extract-dtb.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 import os
 import string
+import struct
 
 __version__ = "1.3.dev0"
 
@@ -46,6 +47,12 @@ def safe_output_path(output_dir, dtb_filename_new):
     os.makedirs(os.path.dirname(ret), exist_ok=True)
     return ret
 
+def get_header(content, offset=0):
+    header_keys = ["magic", "total_size", "off_dt_struct", "off_dt_strings", "off_mem_rsvmap", "version", "last_compatible_version", "boot_cpuid_phys", "size_dt_strings", "size_dt_struct"]
+    header = struct.unpack_from(">IIIIIIIIII", content, offset = offset)
+    h = dict(zip(header_keys, header))
+    print(h)
+    return h
 
 def split(args):
     """Reads a file and looks for DTB_HEADER occurrences (beginning of each DTB)
@@ -71,8 +78,9 @@ def split(args):
         for n, pos in enumerate(positions, 0):
             dtb_filename = get_dtb_filename(n)
             filepath = os.path.join(args.output_dir, dtb_filename)
-            dump_file(filepath, content[begin_pos:pos])
+            h = get_header(content, offset=begin_pos)
             if n > 0:
+                dump_file(filepath, content[begin_pos:begin_pos+h['total_size']])
                 dtb_name = get_dtb_model(filepath)
                 if dtb_name:
                     dtb_filename_new = get_dtb_filename(n, dtb_name)
@@ -81,13 +89,16 @@ def split(args):
                     )
                     os.rename(filepath, dtb_filename_new_full)
                     dtb_filename = dtb_filename_new
+            else:
+                dump_file(filepath, content[begin_pos:pos])
             print("Dumped {0}, start={1} end={2}".format(dtb_filename, begin_pos, pos))
             begin_pos = pos
 
         # Last chunk
         dtb_filename = get_dtb_filename(n + 1)
         filepath = os.path.join(args.output_dir, dtb_filename)
-        dump_file(filepath, content[begin_pos:])
+        h = get_header(content, offset=begin_pos)
+        dump_file(filepath, content[begin_pos:begin_pos+h['total_size']])
         dtb_name = get_dtb_model(filepath)
         if dtb_name:
             dtb_filename_new = get_dtb_filename(n + 1, dtb_name)
