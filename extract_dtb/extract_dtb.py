@@ -51,7 +51,6 @@ def get_header(content, offset=0):
     header_keys = ["magic", "total_size", "off_dt_struct", "off_dt_strings", "off_mem_rsvmap", "version", "last_compatible_version", "boot_cpuid_phys", "size_dt_strings", "size_dt_struct"]
     header = struct.unpack_from(">IIIIIIIIII", content, offset = offset)
     h = dict(zip(header_keys, header))
-    print(h)
     return h
 
 def split(args):

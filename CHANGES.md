@@ -4,7 +4,7 @@ Changelog for extract-dtb
 1.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix extraction logic to use the exact `total_size` from the DTB header, preventing trailing garbage data.
 
 
 1.2.3 (2022-09-29)
